@@ -15,7 +15,6 @@ jobs:
         compiler: [gcc, clang]
     env:
       CC: ${{ matrix.compiler }}
-      CC_FOR_BUILD: ${{ matrix.compiler }}
     steps:
       - uses: actions/checkout@v2
       - name: Run Fuzzer
