@@ -42,7 +42,6 @@ jobs:
             b: configure
     env:
       CC: ${{ matrix.compiler }}
-      CC_FOR_BUILD: ${{ matrix.compiler }}
       CRYPTO_BACKEND: ${{ matrix.crypto_backend }}
       BUILD_SHARED_LIBS: ${{ matrix.build_shared_libs }}
       ENABLE_ZLIB_COMPRESSION: ${{ matrix.enable_zlib_compression }}
@@ -98,7 +97,6 @@ jobs:
         compiler: [gcc, clang]
     env:
       CC: ${{ matrix.compiler }}
-      CC_FOR_BUILD: ${{ matrix.compiler }}
     steps:
       - uses: actions/checkout@v2
       - name: Run Fuzzer
