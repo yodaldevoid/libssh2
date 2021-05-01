@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Check Style
         run: ./ci/checksrc.sh
-  build:
+  build-linux:
     runs-on: ubuntu-16.04
     strategy:
       fail-fast: false
@@ -91,6 +91,51 @@ jobs:
           popd
           CTEST_OUTPUT_ON_FAILURE=1 cmake --build . --target test
           cmake --build . --target package
+  build-windows:
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        # MSVC 2015, 2017, and 2019, respectively
+        toolset: [v140, v141, v142]
+        arch: [Win32, x64]
+        crypto_backend: [OpenSSL, WinCNG]
+        build_shared_libs: [OFF, ON]
+        configuration: [Release]
+    env:
+      TOOLSET: ${{ matrix.toolset }}
+      BUILD_ARCH: ${{ matrix.arch }}
+      CRYPTO_BACKEND: ${{ matrix.crypto_backend }}
+      BUILD_SHARED_LIBS: ${{ matrix.build_shared_libs }}
+      CONFIGURATION: ${{ matrix.configuration }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache vcpkg installs
+        uses: actions/cache@v1
+        with:
+          path: C:\vcpkg\installed
+          key: ${{ runner.os }}-vcpkg
+      - name: Install OpenSSL
+        if: ${{ matrix.crypto_backend == 'OpenSSL' }}
+        run: |
+          if ($env:BUILD_ARCH -eq "Win32") { $ARCH = "x86" } else { $ARCH = "x64" }
+          vcpkg install openssl:${ARCH}-windows
+      - name: Generate CMake Project
+        run: |
+          mkdir bin
+          cd bin
+          cmake -G "Visual Studio 16 2019" -A $env:BUILD_ARCH -T $env:TOOLSET -DCRYPTO_BACKEND="$env:CRYPTO_BACKEND" -DBUILD_SHARED_LIBS="$env:BUILD_SHARED_LIBS" -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake" ..
+      - name: Build CMake Project
+        working-directory: ./bin
+        run: cmake --build . --config $env:CONFIGURATION
+      - name: Test CMake Project
+        working-directory: ./bin
+        run: ctest -VV -C $env:CONFIGURATION --output-on-failure
+      - name: Output Test Outputs
+        working-directory: ./bin
+        run: |
+          if(Test-Path CMakeFiles/CMakeOutput.log) { cat CMakeFiles/CMakeOutput.log }
+          if(Test-Path CMakeFiles/CMakeError.log) { cat CMakeFiles/CMakeError.log }
   fuzzer:
     runs-on: ubuntu-16.04
     strategy:
