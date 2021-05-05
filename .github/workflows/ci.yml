@@ -37,7 +37,7 @@ jobs:
           if ($env:BUILD_ARCH -eq "Win32") { $ARCH = "x86" } else { $ARCH = "x64" }
           vcpkg install openssl:${ARCH}-windows
       - name: Install Visual Studio 2013
-        if: ${{ matrix.toolset != 'v120' }}
+        if: ${{ matrix.toolset == 'v120' }}
         run: choco install visualstudiocommunity2013
       - name: Generate CMake Project
         run: |
