@@ -44,11 +44,3 @@ jobs:
       - name: Build CMake Project
         working-directory: ./bin
         run: cmake --build . --config $env:CONFIGURATION
-      - name: Test CMake Project
-        working-directory: ./bin
-        run: ctest -VV -C $env:CONFIGURATION --output-on-failure
-      - name: Output Test Outputs
-        working-directory: ./bin
-        run: |
-          if(Test-Path CMakeFiles/CMakeOutput.log) { cat CMakeFiles/CMakeOutput.log }
-          if(Test-Path CMakeFiles/CMakeError.log) { cat CMakeFiles/CMakeError.log }
