@@ -31,7 +31,7 @@ jobs:
           Invoke-WebRequest -Uri http://go.microsoft.com/?linkid=9863609 -OutFile ${{ github.worspace }}\visual_studio_2013_community.iso
           $ISO_MOUNT = Mount-DiskImage -PassThru -StorageType ISO -ImagePath ${{ github.worspace }}\visual_studio_2013_community.iso
           $ISO_MOUNT = ($ISO_MOUNT | Get-Volume).DriveLetter + ":\"
-          $ISO_MOUNT\vs_community.exe /Passive /NoRestart /Log "install.log" /AdminFile "$ISO_MOUNT\AdminDeployment.xml"
+          &"$ISO_MOUNT\vs_community.exe" /Passive /NoRestart /Log "install.log" /AdminFile "$ISO_MOUNT\AdminDeployment.xml"
           Dismount-DiskImage -InputObject $ISO_MOUNT
           rm visual_studio_2013_community.iso
       - uses: actions/checkout@v2
