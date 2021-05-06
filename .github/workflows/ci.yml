@@ -38,10 +38,11 @@ jobs:
           vcpkg install openssl:${ARCH}-windows
       - name: Install Visual Studio 2013
         if: ${{ matrix.toolset == 'v120' }}
-        run: choco install visualstudiocommunity2013 --install-arguments="'/l*v ${{ github.workspace }}\VisualStudioCommunity2013_msi_install.log'"
-      - name: Step To run on failure
-        if: ${{ matrix.toolset == 'v120' && failure() }}
-        run: cat ${{ github.workspace }}\VisualStudioCommunity2013_msi_install.log
+        run: |
+          Invoke-WebRequest -Uri http://go.microsoft.com/?linkid=9863609 -OutFile visual_studio_2013_community.exe
+          7z.exe x -y -tiso -o".\visual_studio_2013_community" ".\visual_studio_2013_community.exe"
+          cd visual_studio_2013_community
+          .\vs_community.exe /Passive /NoRestart /Log "install.log" /AdminFile "AdminDeployment.xml"
       - name: Generate CMake Project
         run: |
           mkdir bin
