@@ -32,6 +32,7 @@ jobs:
           $ISO_MOUNT = Mount-DiskImage -PassThru -StorageType ISO -ImagePath ${{ github.workspace }}\visual_studio_2013_community.iso
           $ISO_DRIVE = ($ISO_MOUNT | Get-Volume).DriveLetter + ":\"
           &"$ISO_DRIVE\vs_community.exe" /Passive /NoRestart /Log "install.log" /AdminFile "$ISO_DRIVE\AdminDeployment.xml"
+          echo $LASTEXITCODE
           Dismount-DiskImage -InputObject $ISO_MOUNT
           rm visual_studio_2013_community.iso
           cat install.log
