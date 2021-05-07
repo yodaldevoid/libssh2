@@ -34,6 +34,7 @@ jobs:
           &"$ISO_DRIVE\vs_community.exe" /Passive /NoRestart /Log "install.log" /AdminFile "$ISO_DRIVE\AdminDeployment.xml"
           Dismount-DiskImage -InputObject $ISO_MOUNT
           rm visual_studio_2013_community.iso
+          Get-ItemProperty -Path Registry::HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\MSBuild\ToolsVersions\12.0
       - uses: actions/checkout@v2
       - name: Cache vcpkg installs
         uses: actions/cache@v1
